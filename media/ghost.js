@@ -1,21 +1,23 @@
 const vscode = acquireVsCodeApi();
-const ghostElement = document.getElementById('az1-ghost');
-const speechBubbleElement = document.getElementById('az1-speech-bubble');
+const ghostEl = document.getElementById('az1-ghost');
+const bubbleEl = document.getElementById('az1-speech-bubble');
 
-let messageIndex = 0;
+let clickIndex = 0;
+let hideTimer;
 
-ghostElement.addEventListener('click', () => {
-  speechBubbleElement.textContent = CLICK_MESSAGES[messageIndex];
-  speechBubbleElement.classList.add('show');
-  messageIndex = (messageIndex + 1) % CLICK_MESSAGES.length;
-  setTimeout(() => speechBubbleElement.classList.remove('show'), 5000);
+function showMessage(text, mood) {
+  clearTimeout(hideTimer);
+  bubbleEl.textContent = text;
+  bubbleEl.className = `speech-bubble show mood-${mood ?? 'happy'}`;
+  hideTimer = setTimeout(() => bubbleEl.classList.remove('show'), 7000);
+}
+
+ghostEl.addEventListener('click', () => {
+  showMessage(CLICK_MESSAGES[clickIndex], 'happy');
+  clickIndex = (clickIndex + 1) % CLICK_MESSAGES.length;
 });
 
 window.addEventListener('message', event => {
-  const { type, text } = event.data;
-  if (type === 'ghostMessage') {
-    speechBubbleElement.textContent = text;
-    speechBubbleElement.classList.add('show');
-    setTimeout(() => speechBubbleElement.classList.remove('show'), 7000);
-  }
+  const { type, text, mood } = event.data;
+  if (type === 'ghostMessage') showMessage(text, mood);
 });

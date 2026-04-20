@@ -4,6 +4,7 @@ export interface Ghost {
   trait: string;
   imagePath: string;
 
+  getMood(): string;
   onError(count: number): string;
   onWarning(count: number): string;
   onSave(errorCount: number, warningCount: number): string;

@@ -4,6 +4,8 @@ import { GhostViewProvider } from "./GhostViewProvider";
 import { countDiagnostics, countDocumentDiagnostics } from "../utils/diagnostics";
 
 export class EventController {
+  private codeChangeTimer: ReturnType<typeof setTimeout> | undefined;
+
   constructor(
     private readonly ghost: Ghost,
     private readonly ghostProvider: GhostViewProvider
@@ -18,37 +20,39 @@ export class EventController {
     );
   }
 
+  private send(message: string) {
+    this.ghostProvider.sendMessageToGhost(message, this.ghost.getMood());
+  }
+
   private handleDiagnosticsChange() {
     const diagnostics = vscode.languages.getDiagnostics();
     const { errors, warnings } = countDiagnostics(diagnostics);
 
     if (errors > 0) {
-      this.ghostProvider.sendMessageToGhost(this.ghost.onError(errors));
+      this.send(this.ghost.onError(errors));
     } else if (warnings > 0) {
-      this.ghostProvider.sendMessageToGhost(this.ghost.onWarning(warnings));
+      this.send(this.ghost.onWarning(warnings));
     }
   }
 
   private handleFileOpen(editor: vscode.TextEditor | undefined) {
     if (!editor?.document) return;
-
-    const fileName = editor.document.fileName;
+    const fileType = editor.document.fileName.split(".").pop() ?? "";
     const lineCount = editor.document.lineCount;
-    const fileType = fileName.split(".").pop() || "";
-
-    this.ghostProvider.sendMessageToGhost(this.ghost.onFileOpen(fileType, lineCount));
+    this.send(this.ghost.onFileOpen(fileType, lineCount));
   }
 
   private handleFileSave(document: vscode.TextDocument) {
     const diagnostics = vscode.languages.getDiagnostics(document.uri);
     const { errors, warnings } = countDocumentDiagnostics(diagnostics);
-
-    this.ghostProvider.sendMessageToGhost(this.ghost.onSave(errors, warnings));
+    this.send(this.ghost.onSave(errors, warnings));
   }
 
   private handleTextChange(event: vscode.TextDocumentChangeEvent) {
-    if (event.contentChanges.length > 0) {
-      this.ghostProvider.sendMessageToGhost(this.ghost.onCodeChange());
-    }
+    if (event.contentChanges.length === 0) return;
+    clearTimeout(this.codeChangeTimer);
+    this.codeChangeTimer = setTimeout(() => {
+      this.send(this.ghost.onCodeChange());
+    }, 2000);
   }
 }

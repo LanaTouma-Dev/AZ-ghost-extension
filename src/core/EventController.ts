@@ -20,8 +20,8 @@ export class EventController {
     );
   }
 
-  private send(message: string) {
-    this.ghostProvider.sendMessageToGhost(message, this.ghost.getMood());
+  private send(message: string, priority: 'high' | 'normal' = 'normal') {
+    this.ghostProvider.sendMessageToGhost(message, this.ghost.getMood(), priority);
   }
 
   private handleDiagnosticsChange() {
@@ -39,13 +39,13 @@ export class EventController {
     if (!editor?.document) return;
     const fileType = editor.document.fileName.split(".").pop() ?? "";
     const lineCount = editor.document.lineCount;
-    this.send(this.ghost.onFileOpen(fileType, lineCount));
+    this.send(this.ghost.onFileOpen(fileType, lineCount), 'high');
   }
 
   private handleFileSave(document: vscode.TextDocument) {
     const diagnostics = vscode.languages.getDiagnostics(document.uri);
     const { errors, warnings } = countDocumentDiagnostics(diagnostics);
-    this.send(this.ghost.onSave(errors, warnings));
+    this.send(this.ghost.onSave(errors, warnings), 'high');
   }
 
   private handleTextChange(event: vscode.TextDocumentChangeEvent) {

@@ -8,6 +8,21 @@ let queueTimer;
 let messageEndTime = 0;
 const MIN_DISPLAY_MS = 3000;
 
+const POKE_MESSAGES = [
+  "hey!",
+  "don't poke me.",
+  "I'm trying to watch you code.",
+  "what do you want.",
+  "again??",
+  "I felt that.",
+  "...",
+  "stop.",
+  "I'm a ghost, not a button.",
+  "okay OKAY I see you.",
+];
+
+let pokeIndex = 0;
+
 function showNow(text, mood) {
   clearTimeout(hideTimer);
   clearTimeout(queueTimer);
@@ -17,7 +32,11 @@ function showNow(text, mood) {
   hideTimer = setTimeout(() => bubbleEl.classList.remove('show'), 7000);
 }
 
-function showMessage(text, mood) {
+function showMessage(text, mood, priority) {
+  if (priority === 'high') {
+    showNow(text, mood);
+    return;
+  }
   const remaining = messageEndTime - Date.now();
   if (remaining > 0) {
     clearTimeout(queueTimer);
@@ -28,11 +47,17 @@ function showMessage(text, mood) {
 }
 
 ghostEl.addEventListener('click', () => {
-  showMessage(CLICK_MESSAGES[clickIndex], 'happy');
-  clickIndex = (clickIndex + 1) % CLICK_MESSAGES.length;
+  const inPokeMode = bubbleEl.classList.contains('show');
+  if (inPokeMode) {
+    showNow(POKE_MESSAGES[pokeIndex % POKE_MESSAGES.length], 'grumpy');
+    pokeIndex++;
+  } else {
+    showNow(CLICK_MESSAGES[clickIndex % CLICK_MESSAGES.length], 'happy');
+    clickIndex++;
+  }
 });
 
 window.addEventListener('message', event => {
-  const { type, text, mood } = event.data;
-  if (type === 'ghostMessage') showMessage(text, mood);
+  const { type, text, mood, priority } = event.data;
+  if (type === 'ghostMessage') showMessage(text, mood, priority);
 });

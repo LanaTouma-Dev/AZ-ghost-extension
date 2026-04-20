@@ -3,10 +3,12 @@
   "displayName": "AZ Ghosts",
   "description": "Summon the AZs, eight mischievous ghosts with distinct personalities, into your VS Code workspace! They float, react, and keep you company while you code",
   "version": "0.0.1",
+  "publisher": "lana",
+  "repository": { "type": "git", "url": "https://github.com/LanaTouma-Dev/AZ-ghost-extension" },
   "engines": {
     "vscode": "^1.103.0"
-  },
-  "categories": [
+  }, 
+  "categories":  [ 
     "Other"
   ],
   "activationEvents": [
@@ -14,22 +16,12 @@
   ],
   "main": "./dist/extension.js",
   "contributes": {
-    "viewsContainers": {
-      "activitybar": [
-        {
-          "id": "azGhosts-container",
-          "title": "AZ Ghost",
-          "icon": "media/az.png"
-        }
-      ]
-    },
     "views": {
-      "azGhosts-container": [
+      "explorer": [
         {
           "id": "azGhosts.sidebar",
-          "name": "AZ1",
-          "type": "webview",
-          "icon": "media/az.png"
+          "name": "AZ Ghost",
+          "type": "webview"
         }
       ]
     }

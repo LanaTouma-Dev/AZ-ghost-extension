@@ -27,7 +27,9 @@ export class GhostViewProvider implements vscode.WebviewViewProvider {
   }
 
   public sendMessageToGhost(text: string, mood: string = 'happy') {
-    this._view?.webview.postMessage({ type: "ghostMessage", text, mood });
+    if (!this._view) return;
+    this._view.webview.postMessage({ type: "ghostMessage", text, mood });
+    vscode.commands.executeCommand('workbench.action.focusActiveEditorGroup');
   }
 
   private _getHtmlForWebview(webview: vscode.Webview) {

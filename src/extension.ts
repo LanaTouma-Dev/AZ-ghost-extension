@@ -17,6 +17,10 @@ export function activate(context: vscode.ExtensionContext) {
 
   eventController.registerEvents(context);
 
+  context.subscriptions.push(
+    vscode.commands.registerCommand('azGhosts.toggleMute', () => ghostProvider.toggleMute())
+  );
+
   vscode.window.showInformationMessage('AZ Ghosts extension activated! Look for the ghost icon in the left sidebar.');
 }
 

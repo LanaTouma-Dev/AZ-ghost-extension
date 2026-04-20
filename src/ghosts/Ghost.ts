@@ -10,5 +10,7 @@ export interface Ghost {
   onSave(errorCount: number, warningCount: number): string;
   onFileOpen(fileType: string, lineCount: number): string;
   onCodeChange(): string;
+  onIdle(): string;
+  onSessionMilestone(hours: number): string;
   getClickMessages(): string[];
 }

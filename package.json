@@ -16,6 +16,12 @@
   ],
   "main": "./dist/extension.js",
   "contributes": {
+    "commands": [
+      {
+        "command": "azGhosts.toggleMute",
+        "title": "AZ Ghost: Toggle Mute"
+      }
+    ],
     "views": {
       "explorer": [
         {

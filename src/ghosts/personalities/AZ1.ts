@@ -17,6 +17,7 @@ export class AZ1 implements Ghost {
 
   private mood: Mood = 'happy';
   private cleanSaveStreak = 0;
+  private errorSaveStreak = 0;
 
   getMood(): Mood {
     return this.mood;
@@ -110,6 +111,25 @@ export class AZ1 implements Ghost {
   onSave(errorCount: number, warningCount: number): string {
     if (errorCount > 0) {
       this.updateMood('error');
+      this.errorSaveStreak++;
+
+      if (this.errorSaveStreak >= 4) {
+        return pickRandom([
+          `${this.errorSaveStreak} saves with errors. I'm begging you.`,
+          "at this point I'm just watching.",
+          `save ${this.errorSaveStreak} with errors. are you okay.`,
+          "we've been here before. several times.",
+        ]);
+      }
+
+      if (this.errorSaveStreak === 3) {
+        return pickRandom([
+          "third save with errors. we need to talk.",
+          `${errorCount} errors. again. this is the third time.`,
+          "I'm starting to lose faith.",
+        ]);
+      }
+
       const pools: MoodPools = {
         default: [
           `Saved, but ${errorCount} error(s) remain. Careful.`,
@@ -155,6 +175,7 @@ export class AZ1 implements Ghost {
       return pickMooded(pools, this.mood);
     }
 
+    this.errorSaveStreak = 0;
     this.updateMood('clean-save');
     const pools: MoodPools = {
       default: [
@@ -215,8 +236,19 @@ export class AZ1 implements Ghost {
       php:   ["...php.", "No comment.", "I'll pretend I didn't see that.", "php. okay."],
       rb:    ["Ruby! Charming as ever.", "Ah, Ruby. A delight.", "Ruby code. Reads like poetry."],
       swift: ["Swift. Apple's finest.", "iOS dev? Respect.", "Swift. Clean and fast."],
-      vue:   ["Vue! A wholesome choice.", "Vue components. Cozy.", "Vue.js. I can respect this."],
-      svelte:["Svelte! Interesting choice.", "No virtual DOM? Bold.", "Svelte. Ahead of its time."],
+      vue:        ["Vue! A wholesome choice.", "Vue components. Cozy.", "Vue.js. I can respect this."],
+      svelte:     ["Svelte! Interesting choice.", "No virtual DOM? Bold.", "Svelte. Ahead of its time."],
+      gitignore:  ["Setting boundaries. Respect.", "Telling git what to forget. Healthy.", "A clean .gitignore is a clean conscience."],
+      env:        ["Ooh. Secrets. Don't commit this.", ".env file. Handle with care.", "Environment variables. The adult way to config."],
+      toml:       ["TOML. A civilized config format.", "Clean config. I respect it.", "TOML. Readable by humans and ghosts."],
+      lock:       ["A lock file. Don't touch it.", "Leave it alone. I mean it.", "lock file spotted. step away slowly."],
+      dockerfile: ["Containerizing things. Bold.", "Docker. You like pain AND portability.", "A Dockerfile. Respect."],
+      prettierrc: ["Enforcing taste on the team. Good.", "Prettier config. Opinionated formatting. Smart.", "So THAT'S how you format things around here."],
+      editorconfig:["Consistent indentation. You care. I see it.", ".editorconfig. The peace treaty of the codebase."],
+      gitattributes:["Managing git attributes. Thorough.", "You're really committing to this repo hygiene."],
+      nvmrc:      ["Node version pinned. Professional.", ".nvmrc. You've been burned before, haven't you."],
+      eslintrc:   ["Linting rules. Someone has standards.", "ESLint config. Keeping everyone honest."],
+      Dockerfile: ["Containerizing things. Bold.", "Docker. You like pain AND portability."],
     };
 
     const lines = reactions[fileType] ?? [
@@ -266,6 +298,52 @@ export class AZ1 implements Ghost {
       ],
     };
     return pickMooded(pools, this.mood);
+  }
+
+  onIdle(): string {
+    const pools: MoodPools = {
+      default: [
+        "...you still there?",
+        "hello?",
+        "did you fall asleep?",
+        "I'm still here. Are you?",
+        "taking a thinking break?",
+        "it's quiet. too quiet.",
+      ],
+      grumpy: [
+        "finally taking a break from the errors?",
+        "giving up? understandable.",
+        "...silence. fine.",
+      ],
+      tired: [
+        "you stopped. smart. go to sleep.",
+        "rest. please. I'm begging.",
+        "...zzz... wait are you idle or am I?",
+      ],
+      excited: [
+        "hey! don't stop now, we were on a roll!",
+        "where'd you go??",
+        "come back! the code isn't done!",
+      ],
+    };
+    return pickMooded(pools, this.mood);
+  }
+
+  onSessionMilestone(hours: number): string {
+    if (hours === 1) {
+      return pickRandom([
+        "one hour in. drink some water.",
+        "you've been coding for an hour. stand up.",
+        "1 hour down. how's your back?",
+        "an hour already. time flies when you're debugging.",
+      ]);
+    }
+    return pickRandom([
+      `${hours} hours. are you okay.`,
+      `${hours} hours of coding. I'm genuinely concerned.`,
+      `you've been here for ${hours} hours. go outside.`,
+      `${hours} hours. legendary. also please eat something.`,
+    ]);
   }
 
   getClickMessages(): string[] {

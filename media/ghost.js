@@ -1,11 +1,13 @@
 const vscode = acquireVsCodeApi();
-const ghostEl = document.getElementById('az1-ghost');
+const ghostEl  = document.getElementById('az1-ghost');
 const bubbleEl = document.getElementById('az1-speech-bubble');
-
 let clickIndex = 0;
+let pokeIndex  = 0;
 let hideTimer;
 let queueTimer;
 let messageEndTime = 0;
+let muted = false;
+
 const MIN_DISPLAY_MS = 3000;
 
 const POKE_MESSAGES = [
@@ -20,8 +22,6 @@ const POKE_MESSAGES = [
   "I'm a ghost, not a button.",
   "okay OKAY I see you.",
 ];
-
-let pokeIndex = 0;
 
 function showNow(text, mood) {
   clearTimeout(hideTimer);
@@ -47,8 +47,7 @@ function showMessage(text, mood, priority) {
 }
 
 ghostEl.addEventListener('click', () => {
-  const inPokeMode = bubbleEl.classList.contains('show');
-  if (inPokeMode) {
+  if (bubbleEl.classList.contains('show')) {
     showNow(POKE_MESSAGES[pokeIndex % POKE_MESSAGES.length], 'grumpy');
     pokeIndex++;
   } else {
@@ -59,5 +58,9 @@ ghostEl.addEventListener('click', () => {
 
 window.addEventListener('message', event => {
   const { type, text, mood, priority } = event.data;
-  if (type === 'ghostMessage') showMessage(text, mood, priority);
+  if (type === 'ghostMessage') {
+    showMessage(text, mood, priority);
+  } else if (type === 'muteChange') {
+    muted = event.data.muted;
+  }
 });

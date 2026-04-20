@@ -4,6 +4,7 @@ import { Ghost } from "../ghosts";
 export class GhostViewProvider implements vscode.WebviewViewProvider {
   public static readonly viewType = "azGhosts.sidebar";
   private _view?: vscode.WebviewView;
+  private _muted = false;
 
   constructor(
     private readonly _extensionUri: vscode.Uri,
@@ -26,8 +27,14 @@ export class GhostViewProvider implements vscode.WebviewViewProvider {
     webviewView.title = "AZ Ghost";
   }
 
+  public toggleMute() {
+    this._muted = !this._muted;
+    this._view?.webview.postMessage({ type: 'muteChange', muted: this._muted });
+    vscode.window.showInformationMessage(this._muted ? 'AZ Ghost muted.' : 'AZ Ghost unmuted.');
+  }
+
   public sendMessageToGhost(text: string, mood: string = 'happy', priority: 'high' | 'normal' = 'normal') {
-    if (!this._view) return;
+    if (!this._view || this._muted) return;
     this._view.webview.postMessage({ type: "ghostMessage", text, mood, priority });
     vscode.commands.executeCommand('workbench.action.focusActiveEditorGroup');
   }
@@ -115,7 +122,7 @@ export class GhostViewProvider implements vscode.WebviewViewProvider {
     <div class="ghost" id="az1-ghost">
       <img src="${imageUri}" alt="${this._ghost.name}">
     </div>
-    <div class="speech-bubble" id="az1-speech-bubble"></div>
+<div class="speech-bubble" id="az1-speech-bubble"></div>
   </div>
   <script>const CLICK_MESSAGES = ${clickMessages};</script>
   <script src="${scriptUri}"></script>

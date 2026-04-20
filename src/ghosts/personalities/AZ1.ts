@@ -234,7 +234,8 @@ export class AZ1 implements Ghost {
     };
 
     const suffix = timeSuffix[timeSlot];
-    return suffix ? `${reaction} ${pickRandom(suffix)}` : reaction;
+    const shouldAddTime = suffix && Math.random() < 0.25;
+    return shouldAddTime ? `${reaction} ${pickRandom(suffix)}` : reaction;
   }
 
   onCodeChange(): string {

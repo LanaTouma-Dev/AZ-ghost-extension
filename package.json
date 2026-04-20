@@ -18,7 +18,7 @@
       "activitybar": [
         {
           "id": "azGhosts-container",
-          "title": "AZ Ghosts",
+          "title": "AZ Ghost",
           "icon": "media/az.png"
         }
       ]
@@ -27,7 +27,7 @@
       "azGhosts-container": [
         {
           "id": "azGhosts.sidebar",
-          "name": "Your Ghost",
+          "name": "AZ1",
           "type": "webview",
           "icon": "media/az.png"
         }

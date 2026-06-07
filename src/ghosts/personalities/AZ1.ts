@@ -1,6 +1,48 @@
 import { Ghost } from "../Ghost";
 import { pickRandom } from "../../utils/random";
-import { getTimeSlot } from "../../utils/time";
+import { TimeSlot, getTimeSlot } from "../../utils/time";
+
+const REACTIONS: Record<string, string[]> = {
+  ts:           ["TypeScript. Respectable.", "At least it's not plain JS.", "Strong types. Smart move."],
+  js:           ["JavaScript. Ew.", "JS? Really?", "Ah yes, the chaos language.", "JavaScript again. Sure."],
+  jsx:          ["JSX? Worse than plain JS, somehow.", "React... fine, I guess.", "JSX. I'll allow it. Barely."],
+  tsx:          ["TSX. JS and JSX had a baby. Still ew.", "At least there's TypeScript in there.", "TSX... the lesser evil."],
+  py:           ["Python. Nice choice.", "Ah, Python. Elegant.", "A person of culture.", "Python. Clean and readable."],
+  rs:           ["Rust. I respect you and I fear you.", "Fighting the borrow checker again?", "Rust. Dangerous territory.", "Rust dev? Respect."],
+  cs:           ["C#. Good taste.", "Now we're talking.", "A fellow C# enjoyer.", "C#. My favorite honestly."],
+  go:           ["Go. Simple. Honest.", "Golang. No-nonsense, I like it.", "Go code. Gets the job done."],
+  java:         ["Java. Verbose as ever.", "EnterpriseFactoryBeanManagerImpl.java?", "Java... don't forget to close your streams."],
+  kt:           ["Kotlin! Smart choice.", "Kotlin — Java but actually good.", "Ah, Kotlin. You have taste."],
+  html:         ["HTML. Not exactly code, but okay.", "Ah, the skeleton of the web.", "Angle brackets as far as the eye can see."],
+  css:          ["CSS. I feel your pain.", "May your flexbox be centered.", "The cascade giveth and the cascade taketh away."],
+  scss:         ["SCSS. At least you made CSS bearable.", "Variables in CSS. Civilized.", "SCSS — brave attempt at fixing CSS."],
+  md:           ["Taking notes. Good habit.", "Documentation? Look at you.", "Markdown. Words for humans."],
+  json:         ["A JSON scroll. Magical.", "Key-value incantations. Classic.", "JSON. The universal language."],
+  yaml:         ["YAML. Indentation crimes await.", "One wrong space and it all falls apart.", "YAML — where whitespace is law."],
+  sql:          ["Ah, the ancient tongue.", "SQL. Timeless.", "Querying the depths.", "JOIN me in appreciation of SQL."],
+  cpp:          ["C++. You are brave.", "Manual memory management? Godspeed.", "C++... I'll pray for you."],
+  c:            ["Raw C. You have my respect.", "Close to the metal. I like it.", "C code. No hand-holding here."],
+  php:          ["...php.", "No comment.", "I'll pretend I didn't see that.", "php. okay."],
+  rb:           ["Ruby! Charming as ever.", "Ah, Ruby. A delight.", "Ruby code. Reads like poetry."],
+  swift:        ["Swift. Apple's finest.", "iOS dev? Respect.", "Swift. Clean and fast."],
+  vue:          ["Vue! A wholesome choice.", "Vue components. Cozy.", "Vue.js. I can respect this."],
+  svelte:       ["Svelte! Interesting choice.", "No virtual DOM? Bold.", "Svelte. Ahead of its time."],
+  gitignore:    ["Setting boundaries. Respect.", "Telling git what to forget. Healthy.", "A clean .gitignore is a clean conscience."],
+  env:          ["Ooh. Secrets. Don't commit this.", ".env file. Handle with care.", "Environment variables. The adult way to config."],
+  toml:         ["TOML. A civilized config format.", "Clean config. I respect it.", "TOML. Readable by humans and ghosts."],
+  lock:         ["A lock file. Don't touch it.", "Leave it alone. I mean it.", "lock file spotted. step away slowly."],
+  Dockerfile:   ["Containerizing things. Bold.", "Docker. You like pain AND portability.", "A Dockerfile. Respect."],
+  prettierrc:   ["Enforcing taste on the team. Good.", "Prettier config. Opinionated formatting. Smart.", "So THAT'S how you format things around here."],
+  editorconfig: ["Consistent indentation. You care. I see it.", ".editorconfig. The peace treaty of the codebase."],
+  gitattributes:["Managing git attributes. Thorough.", "You're really committing to this repo hygiene."],
+  nvmrc:        ["Node version pinned. Professional.", ".nvmrc. You've been burned before, haven't you."],
+  eslintrc:     ["Linting rules. Someone has standards.", "ESLint config. Keeping everyone honest."],
+};
+
+const TIME_SUFFIXES: Partial<Record<TimeSlot, string[]>> = {
+  'deep-night': ["...at 3am.", "...at this hour?", "...in the dead of night."],
+  'morning':    ["Bright and early.", "Morning grind, I respect it."],
+};
 
 type Mood = 'happy' | 'grumpy' | 'tired' | 'excited';
 type MoodPools = Partial<Record<Mood, string[]>> & { default: string[] };
@@ -213,61 +255,15 @@ export class AZ1 implements Ghost {
       ]);
     }
 
-    const reactions: Record<string, string[]> = {
-      ts:    ["TypeScript. Respectable.", "At least it's not plain JS.", "Strong types. Smart move."],
-      js:    ["JavaScript. Ew.", "JS? Really?", "Ah yes, the chaos language.", "JavaScript again. Sure."],
-      jsx:   ["JSX? Worse than plain JS, somehow.", "React... fine, I guess.", "JSX. I'll allow it. Barely."],
-      tsx:   ["TSX. JS and JSX had a baby. Still ew.", "At least there's TypeScript in there.", "TSX... the lesser evil."],
-      py:    ["Python. Nice choice.", "Ah, Python. Elegant.", "A person of culture.", "Python. Clean and readable."],
-      rs:    ["Rust. I respect you and I fear you.", "Fighting the borrow checker again?", "Rust. Dangerous territory.", "Rust dev? Respect."],
-      cs:    ["C#. Good taste.", "Now we're talking.", "A fellow C# enjoyer.", "C#. My favorite honestly."],
-      go:    ["Go. Simple. Honest.", "Golang. No-nonsense, I like it.", "Go code. Gets the job done."],
-      java:  ["Java. Verbose as ever.", "EnterpriseFactoryBeanManagerImpl.java?", "Java... don't forget to close your streams."],
-      kt:    ["Kotlin! Smart choice.", "Kotlin — Java but actually good.", "Ah, Kotlin. You have taste."],
-      html:  ["HTML. Not exactly code, but okay.", "Ah, the skeleton of the web.", "Angle brackets as far as the eye can see."],
-      css:   ["CSS. I feel your pain.", "May your flexbox be centered.", "The cascade giveth and the cascade taketh away."],
-      scss:  ["SCSS. At least you made CSS bearable.", "Variables in CSS. Civilized.", "SCSS — brave attempt at fixing CSS."],
-      md:    ["Taking notes. Good habit.", "Documentation? Look at you.", "Markdown. Words for humans."],
-      json:  ["A JSON scroll. Magical.", "Key-value incantations. Classic.", "JSON. The universal language."],
-      yaml:  ["YAML. Indentation crimes await.", "One wrong space and it all falls apart.", "YAML — where whitespace is law."],
-      sql:   ["Ah, the ancient tongue.", "SQL. Timeless.", "Querying the depths.", "JOIN me in appreciation of SQL."],
-      cpp:   ["C++. You are brave.", "Manual memory management? Godspeed.", "C++... I'll pray for you."],
-      c:     ["Raw C. You have my respect.", "Close to the metal. I like it.", "C code. No hand-holding here."],
-      php:   ["...php.", "No comment.", "I'll pretend I didn't see that.", "php. okay."],
-      rb:    ["Ruby! Charming as ever.", "Ah, Ruby. A delight.", "Ruby code. Reads like poetry."],
-      swift: ["Swift. Apple's finest.", "iOS dev? Respect.", "Swift. Clean and fast."],
-      vue:        ["Vue! A wholesome choice.", "Vue components. Cozy.", "Vue.js. I can respect this."],
-      svelte:     ["Svelte! Interesting choice.", "No virtual DOM? Bold.", "Svelte. Ahead of its time."],
-      gitignore:  ["Setting boundaries. Respect.", "Telling git what to forget. Healthy.", "A clean .gitignore is a clean conscience."],
-      env:        ["Ooh. Secrets. Don't commit this.", ".env file. Handle with care.", "Environment variables. The adult way to config."],
-      toml:       ["TOML. A civilized config format.", "Clean config. I respect it.", "TOML. Readable by humans and ghosts."],
-      lock:       ["A lock file. Don't touch it.", "Leave it alone. I mean it.", "lock file spotted. step away slowly."],
-      dockerfile: ["Containerizing things. Bold.", "Docker. You like pain AND portability.", "A Dockerfile. Respect."],
-      prettierrc: ["Enforcing taste on the team. Good.", "Prettier config. Opinionated formatting. Smart.", "So THAT'S how you format things around here."],
-      editorconfig:["Consistent indentation. You care. I see it.", ".editorconfig. The peace treaty of the codebase."],
-      gitattributes:["Managing git attributes. Thorough.", "You're really committing to this repo hygiene."],
-      nvmrc:      ["Node version pinned. Professional.", ".nvmrc. You've been burned before, haven't you."],
-      eslintrc:   ["Linting rules. Someone has standards.", "ESLint config. Keeping everyone honest."],
-      Dockerfile: ["Containerizing things. Bold.", "Docker. You like pain AND portability."],
-    };
-
-    const lines = reactions[fileType] ?? [
+    const lines = REACTIONS[fileType] ?? [
       `${fileType} file. Interesting.`,
       `Opening .${fileType}? Bold choice.`,
       `Never seen a .${fileType} before. I'm watching.`,
     ];
 
     const reaction = pickRandom(lines);
-
-    const timeSlot = getTimeSlot();
-    const timeSuffix: Partial<Record<typeof timeSlot, string[]>> = {
-      'deep-night': ["...at 3am.", "...at this hour?", "...in the dead of night."],
-      'morning':    ["Bright and early.", "Morning grind, I respect it."],
-    };
-
-    const suffix = timeSuffix[timeSlot];
-    const shouldAddTime = suffix && Math.random() < 0.25;
-    return shouldAddTime ? `${reaction} ${pickRandom(suffix)}` : reaction;
+    const suffix = TIME_SUFFIXES[getTimeSlot()];
+    return suffix && Math.random() < 0.25 ? `${reaction} ${pickRandom(suffix)}` : reaction;
   }
 
   onCodeChange(): string {

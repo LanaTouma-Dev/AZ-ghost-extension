@@ -3,8 +3,9 @@ import { Ghost } from "../ghosts";
 import { GhostViewProvider } from "./GhostViewProvider";
 import { countDiagnostics, countDocumentDiagnostics } from "../utils/diagnostics";
 
-const IDLE_TIMEOUT_MS    = 3 * 60 * 1000;
-const SESSION_MILESTONES = [1, 2];
+const IDLE_TIMEOUT_MS         = 3 * 60 * 1000;
+const CODE_CHANGE_DEBOUNCE_MS = 2000;
+const SESSION_MILESTONES      = [1, 2];
 
 export class EventController {
   private codeChangeTimer: ReturnType<typeof setTimeout> | undefined;
@@ -70,7 +71,7 @@ export class EventController {
     clearTimeout(this.codeChangeTimer);
     this.codeChangeTimer = setTimeout(() => {
       this.send(this.ghost.onCodeChange());
-    }, 2000);
+    }, CODE_CHANGE_DEBOUNCE_MS);
 
     clearTimeout(this.idleTimer);
     this.idleTimer = setTimeout(() => {

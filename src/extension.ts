@@ -9,7 +9,7 @@ export function activate(context: vscode.ExtensionContext) {
   const eventController = new EventController(ghost, ghostProvider);
 
   const viewProviderRegistration = vscode.window.registerWebviewViewProvider(
-    "azGhosts.sidebar",
+    GhostViewProvider.viewType,
     ghostProvider,
     { webviewOptions: { retainContextWhenHidden: true } }
   );

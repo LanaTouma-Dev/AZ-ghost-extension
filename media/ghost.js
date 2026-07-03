@@ -1,6 +1,7 @@
 const vscode = acquireVsCodeApi();
 const ghostEl  = document.getElementById('az1-ghost');
 const bubbleEl = document.getElementById('az1-speech-bubble');
+const spriteEl = ghostEl.querySelector('img');
 let clickIndex = 0;
 let pokeIndex  = 0;
 let hideTimer;
@@ -23,9 +24,15 @@ const POKE_MESSAGES = [
   "okay OKAY I see you.",
 ];
 
+function setSprite(mood) {
+  const src = MOOD_SPRITES[mood] ?? MOOD_SPRITES.default;
+  if (spriteEl.src !== src) spriteEl.src = src;
+}
+
 function showNow(text, mood) {
   clearTimeout(hideTimer);
   clearTimeout(queueTimer);
+  setSprite(mood ?? 'happy');
   bubbleEl.textContent = text;
   bubbleEl.className = `speech-bubble show mood-${mood ?? 'happy'}`;
   messageEndTime = Date.now() + MIN_DISPLAY_MS;
@@ -54,6 +61,10 @@ ghostEl.addEventListener('click', () => {
     showNow(CLICK_MESSAGES[clickIndex % CLICK_MESSAGES.length], 'happy');
     clickIndex++;
   }
+});
+
+document.getElementById('coffee-btn').addEventListener('click', () => {
+  vscode.postMessage({ type: 'coffee' });
 });
 
 window.addEventListener('message', event => {

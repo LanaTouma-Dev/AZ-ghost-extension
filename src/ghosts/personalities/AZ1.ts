@@ -56,6 +56,10 @@ export class AZ1 implements Ghost {
   name = "AZ";
   trait = "coffee-lover";
   imagePath = "dark-az-Photoroom.png";
+  moodImagePaths: Partial<Record<Mood, string>> = {
+    grumpy:  "az-grumpy.png",
+    excited: "az-excited.png",
+  };
 
   private mood: Mood = 'happy';
   private cleanSaveStreak = 0;
@@ -340,6 +344,91 @@ export class AZ1 implements Ghost {
       `you've been here for ${hours} hours. go outside.`,
       `${hours} hours. legendary. also please eat something.`,
     ]);
+  }
+
+  onCoffeeNudge(): string {
+    return pickRandom([
+      "45 minutes straight. maybe a coffee?",
+      "you've earned a coffee. I'm having one. obviously.",
+      "coffee break? mine went cold 200 years ago. yours doesn't have to.",
+      "45 minutes of focus. caffeinate. hydrate. then back to it.",
+      "long stretch. the mug isn't going to lift itself. trust me, I've tried.",
+    ]);
+  }
+
+  onCoffee(): string {
+    const before = this.mood;
+    this.mood = before === 'happy' || before === 'excited' ? 'excited' : 'happy';
+
+    const pools: MoodPools = {
+      default: [
+        "ahh. that's the stuff.",
+        "coffee. the answer to most things.",
+        "refueled. let's write something questionable.",
+      ],
+      grumpy: [
+        "fine. this helps. a little.",
+        "...okay. I'm slightly less haunted now.",
+        "coffee accepted. grudges temporarily suspended.",
+      ],
+      tired: [
+        "okay. okay. I'm awake now. mostly.",
+        "warmth... caffeine... I remember what joy is.",
+      ],
+      excited: [
+        "MORE COFFEE. incredible. today is a good day.",
+        "double caffeinated ghost. nothing can stop us now.",
+      ],
+    };
+    return pickMooded(pools, before);
+  }
+
+  onCommit(): string {
+    const pools: MoodPools = {
+      default: [
+        "committed. bold.",
+        "etched into git history. no take-backs.",
+        "another one for the pile.",
+        "committed. I saw everything, by the way.",
+      ],
+      grumpy: [
+        "committed. with those errors? okay then.",
+        "please tell me the message wasn't just 'fix'.",
+        "committed. git blame never forgets. neither do I.",
+      ],
+      tired: [
+        "committing at this hour... history will judge.",
+        "commit logged... now log off...",
+      ],
+      excited: [
+        "COMMITTED! we're shipping today!",
+        "another commit! the streak continues!",
+      ],
+    };
+    return pickMooded(pools, this.mood);
+  }
+
+  onBranchSwitch(branch: string): string {
+    const pools: MoodPools = {
+      default: [
+        `"${branch}". fresh start. same bugs.`,
+        `off to ${branch}. I'll pretend the last branch didn't happen.`,
+        `${branch}, huh. good luck in there.`,
+      ],
+      grumpy: [
+        `running away to ${branch}? the errors will follow.`,
+        `${branch}. sure. a change of scenery fixes everything.`,
+      ],
+      tired: [
+        `${branch}... at this hour... okay...`,
+        `branch hopping past midnight. living dangerously.`,
+      ],
+      excited: [
+        `new branch! ${branch}! love the energy!`,
+        `${branch}! a blank canvas! let's go!`,
+      ],
+    };
+    return pickMooded(pools, this.mood);
   }
 
   getClickMessages(): string[] {

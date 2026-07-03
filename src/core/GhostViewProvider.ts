@@ -25,6 +25,12 @@ export class GhostViewProvider implements vscode.WebviewViewProvider {
 
     webviewView.webview.html = this._getHtmlForWebview(webviewView.webview);
     webviewView.title = "AZ Ghost";
+
+    webviewView.webview.onDidReceiveMessage(message => {
+      if (message.type === 'coffee') {
+        this.sendMessageToGhost(this._ghost.onCoffee(), this._ghost.getMood(), 'high');
+      }
+    });
   }
 
   public toggleMute() {
@@ -36,7 +42,6 @@ export class GhostViewProvider implements vscode.WebviewViewProvider {
   public sendMessageToGhost(text: string, mood: string = 'happy', priority: 'high' | 'normal' = 'normal') {
     if (!this._view || this._muted) return;
     this._view.webview.postMessage({ type: "ghostMessage", text, mood, priority });
-    vscode.commands.executeCommand('workbench.action.focusActiveEditorGroup');
   }
 
   private _getHtmlForWebview(webview: vscode.Webview) {
@@ -47,6 +52,15 @@ export class GhostViewProvider implements vscode.WebviewViewProvider {
       vscode.Uri.joinPath(this._extensionUri, "media", this._ghost.imagePath)
     );
     const clickMessages = JSON.stringify(this._ghost.getClickMessages());
+
+    const moodSprites: Record<string, string> = { default: imageUri.toString() };
+    for (const [mood, file] of Object.entries(this._ghost.moodImagePaths ?? {})) {
+      if (!file) { continue; }
+      moodSprites[mood] = webview
+        .asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "media", file))
+        .toString();
+    }
+    const moodSpritesJson = JSON.stringify(moodSprites);
 
     return `<!DOCTYPE html>
 <html lang="en">
@@ -115,6 +129,17 @@ export class GhostViewProvider implements vscode.WebviewViewProvider {
     .speech-bubble.mood-excited { border-color: #98c379; }
     .speech-bubble.mood-grumpy  { border-color: #e06c75; }
     .speech-bubble.mood-tired   { border-color: #5c6370; }
+
+    .coffee-btn {
+      margin-top: 8px;
+      background: none;
+      border: none;
+      font-size: 16px;
+      cursor: pointer;
+      opacity: 0.45;
+      transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+    }
+    .coffee-btn:hover { opacity: 1; transform: scale(1.2); }
   </style>
 </head>
 <body>
@@ -123,8 +148,9 @@ export class GhostViewProvider implements vscode.WebviewViewProvider {
       <img src="${imageUri}" alt="${this._ghost.name}">
     </div>
 <div class="speech-bubble" id="az1-speech-bubble"></div>
+    <button class="coffee-btn" id="coffee-btn" title="Give AZ a coffee">&#9749;</button>
   </div>
-  <script>const CLICK_MESSAGES = ${clickMessages};</script>
+  <script>const CLICK_MESSAGES = ${clickMessages}; const MOOD_SPRITES = ${moodSpritesJson};</script>
   <script src="${scriptUri}"></script>
 </body>
 </html>`;

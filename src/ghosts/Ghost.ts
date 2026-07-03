@@ -3,6 +3,7 @@ export interface Ghost {
   name: string;
   trait: string;
   imagePath: string;
+  moodImagePaths?: Partial<Record<string, string>>;
 
   getMood(): string;
   onError(count: number): string;
@@ -12,5 +13,9 @@ export interface Ghost {
   onCodeChange(): string;
   onIdle(): string;
   onSessionMilestone(hours: number): string;
+  onCoffeeNudge(): string;
+  onCoffee(): string;
+  onCommit(): string;
+  onBranchSwitch(branch: string): string;
   getClickMessages(): string[];
 }

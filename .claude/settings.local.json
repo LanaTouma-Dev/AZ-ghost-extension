@@ -4,7 +4,13 @@
       "Bash(npm run *)",
       "Bash(npx tsc *)",
       "Bash(node_modules/.bin/tsc --noEmit)",
-      "Bash(cmd.exe /c \"cd /d D:\\\\Projects\\\\AZ-ghost-extension && dir node_modules\\\\.bin\\\\tsc* 2>&1\")"
+      "Bash(cmd.exe /c \"cd /d D:\\\\Projects\\\\AZ-ghost-extension && dir node_modules\\\\.bin\\\\tsc* 2>&1\")",
+      "mcp__visualize__read_me",
+      "mcp__visualize__show_widget",
+      "PowerShell(Add-Type -AssemblyName System.Drawing; $bmp = New-Object System.Drawing.Bitmap\\(\\(Resolve-Path 'media\\\\dark-az-Photoroom.png'\\).Path\\); $c = $bmp.GetPixel\\([int]\\($bmp.Width/2\\), [int]\\($bmp.Height/2\\)\\); Write-Output \"center pixel ARGB: A=$\\($c.A\\) R=$\\($c.R\\) G=$\\($c.G\\) B=$\\($c.B\\) | size: $\\($bmp.Width\\)x$\\($bmp.Height\\)\"; $bmp.Dispose\\(\\))",
+      "Bash(cp \"Gemini_Generated_Image_cfjh65cfjh65cfjh-Photoroom.png\" az-excited.png)",
+      "Bash(cp \"Gemini_Generated_Image_5aigv05aigv05aig-Photoroom.png\" az-grumpy.png)",
+      "Read(//c/c/Projects/AZ-ghost-extension/**)"
     ]
   }
 }
